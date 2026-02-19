@@ -2,10 +2,151 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=web/">
-    <title>进制转换工具 - 重定向中...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进制转换工具 - 十进制转二进制/八进制/十六进制</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>页面正在加载，如果没有自动跳转，请<a href="web/">点击这里</a>...</p>
+    <div class="container">
+        <div class="header">
+            <h1>📊 进制转换工具</h1>
+            <p class="subtitle">将十进制数转换为二进制（原码、反码、补码）、八进制和十六进制</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 左侧输入区域 -->
+            <div class="input-section">
+                <h2>转换输入</h2>
+                
+                <div class="input-group">
+                    <label for="decimalInput">十进制数：</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="decimalInput" 
+                            placeholder="输入十进制数（-2147483648 到 2147483647）"
+                            min="-2147483648" 
+                            max="2147483647"
+                        >
+                        <button class="btn-convert" onclick="performConversion()">转换</button>
+                    </div>
+                    <small class="info-text">🔸 支持32位有符号整数范围</small>
+                </div>
+
+                <!-- 快速示例 -->
+                <div class="quick-examples">
+                    <p>快速示例：</p>
+                    <div class="example-buttons">
+                        <button class="btn-example" onclick="quickConvert(5)">5</button>
+                        <button class="btn-example" onclick="quickConvert(-5)">-5</button>
+                        <button class="btn-example" onclick="quickConvert(127)">127</button>
+                        <button class="btn-example" onclick="quickConvert(-128)">-128</button>
+                        <button class="btn-example" onclick="quickConvert(0)">0</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧结果区域 -->
+            <div class="result-section">
+                <h2>转换结果</h2>
+                
+                <div id="resultContainer" class="result-container hidden">
+                    <!-- 三元组结果 -->
+                    <div class="result-group">
+                        <h3>📌 二进制表示</h3>
+                        <div class="result-item">
+                            <label>原码 (Sign-Magnitude):</label>
+                            <div class="result-value" id="binaryOriginal"></div>
+                            <button class="btn-copy" onclick="copyToClipboard('binaryOriginal', 'binary-original')">📋</button>
+                        </div>
+                        <div class="result-item">
+                            <label>反码 (Ones' Complement):</label>
+                            <div class="result-value" id="binaryOnes"></div>
+                            <button class="btn-copy" onclick="copyToClipboard('binaryOnes', 'binary-ones')">📋</button>
+                        </div>
+                        <div class="result-item">
+                            <label>补码 (Two's Complement):</label>
+                            <div class="result-value" id="binaryTwos"></div>
+                            <button class="btn-copy" onclick="copyToClipboard('binaryTwos', 'binary-twos')">📋</button>
+                        </div>
+                    </div>
+
+                    <!-- 其他进制 -->
+                    <div class="result-group">
+                        <h3>🔢 其他进制表示</h3>
+                        <div class="result-item">
+                            <label>十六进制 (Hexadecimal):</label>
+                            <div class="result-value" id="hexadecimal"></div>
+                            <button class="btn-copy" onclick="copyToClipboard('hexadecimal', 'hex')">📋</button>
+                        </div>
+                        <div class="result-item">
+                            <label>八进制 (Octal):</label>
+                            <div class="result-value" id="octal"></div>
+                            <button class="btn-copy" onclick="copyToClipboard('octal', 'octal')">📋</button>
+                        </div>
+                    </div>
+
+                    <!-- 装饰信息 -->
+                    <div class="result-info">
+                        <p id="resultInfo"></p>
+                    </div>
+                </div>
+
+                <!-- 空状态 -->
+                <div id="emptyState" class="empty-state">
+                    <p>👈 输入十进制数查看转换结果</p>
+                </div>
+
+                <!-- 错误状态 -->
+                <div id="errorState" class="error-state hidden">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导出选项 -->
+        <div class="export-section hidden" id="exportSection">
+            <h3>导出结果</h3>
+            <div class="export-buttons">
+                <button class="btn-export" onclick="exportResult('text')">📄 导出文本</button>
+                <button class="btn-export" onclick="exportResult('json')">📋 导出JSON</button>
+                <button class="btn-export" onclick="exportResult('csv')">📊 导出CSV</button>
+            </div>
+        </div>
+
+        <!-- 教学说明 -->
+        <div class="guide-section">
+            <details>
+                <summary>📚 转换原理说明</summary>
+                <div class="guide-content">
+                    <h4>原码 (Sign-Magnitude)</h4>
+                    <p>用第一位表示符号（0为正，1为负），其余位表示数值的绝对值的二进制。</p>
+                    <p>例子：-5 → 符号位(1) + |5|的二进制(101) → 11000101</p>
+
+                    <h4>反码 (Ones' Complement)</h4>
+                    <p>正数的反码等于原码；负数的反码是在原码基础上，除符号位外，其他各位取反。</p>
+                    <p>例子：-5的原码 11000101 → 反码 10111010</p>
+
+                    <h4>补码 (Two's Complement)</h4>
+                    <p>正数的补码等于原码；负数的补码是反码加1。补码是计算机中整数的标准表示。</p>
+                    <p>例子：-5的反码 10111010 + 1 → 补码 10111011</p>
+
+                    <h4>十六进制与八进制</h4>
+                    <p>十六进制使用0-9和A-F表示，八进制使用0-7。都可以简化二进制的表示。</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- 页脚 -->
+        <footer>
+            <p>🔗 <a href="https://github.com" target="_blank">GitHub 项目</a> | 💻 基于 C 转换引擎的 Web 版本</p>
+        </footer>
+    </div>
+
+    <!-- 导出文件的隐藏区域 -->
+    <div id="exportOutput" class="hidden"></div>
+
+    <script src="converter.js"></script>
+    <script src="ui.js"></script>
 </body>
 </html>
