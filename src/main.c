@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "converter.h"
 
 /* 函数声明 */
@@ -10,8 +11,13 @@ void process_conversion(int32_t decimal);
 /*
  * 主函数：程序入口
  */
-int main(void)
+int main(int argc, char **argv)
 {
+    /* 非交互自测开关：传入 --selftest 将直接输出 -314156 的转换结果并退出 */
+    if (argc == 2 && strcmp(argv[1], "--selftest") == 0) {
+        process_conversion(-314156);
+        return 0;
+    }
     int choice;
     int32_t decimal;
 

@@ -4,50 +4,27 @@
 #include <string.h>
 
 /*
- * ÒµÎñÂß¼­£ºÊ®½øÖÆ×ª¶ş½øÖÆÔ­Âë
- * Ô­Âë£º·ûºÅÎ»+ÊıÖµÎ»£¬ÕıÊı·ûºÅÎ»Îª0£¬¸ºÊı·ûºÅÎ»Îª1
+ * ä¸šåŠ¡é€»è¾‘ï¼šåè¿›åˆ¶è½¬æ¢ä¸ºäºŒè¿›åˆ¶åŸç 
+ * åŸç ï¼šç¬¦å·ä½+æ•°å€¼ä½ï¼Œæ­£æ•°ç¬¦å·ä½ä¸º0ï¼Œè´Ÿæ•°ç¬¦å·ä½ä¸º1
  */
 int decimal_to_binary_original(int32_t num, char *buffer, int size)
 {
-    if (!buffer || size < 2) {
+    if (!buffer || size < 33) {
         return -1;
     }
 
     int pos = 0;
     
-    /* ´¦Àí·ûºÅÎ» */
+    /* è®¾ç½®ç¬¦å·ä½ */
     if (num < 0) {
         buffer[pos++] = '1';
-        num = -num;  /* È¡¾ø¶ÔÖµ */
+        num = -num;  /* å–ç»å¯¹å€¼ */
     } else {
         buffer[pos++] = '0';
     }
 
-    /* ´¦ÀíÊıÖµÎ»£º´Ó¸ßÎ»µ½µÍÎ»×ª»» */
-    if (num == 0) {
-        if (pos + 1 < size) {
-            buffer[pos++] = '0';
-            buffer[pos] = '\0';
-            return pos;
-        }
-        return -1;
-    }
-
-    /* ÌáÈ¡¶ş½øÖÆÎ» */
-    int bits = 0;
-    int temp = num;
-    while (temp > 0) {
-        bits++;
-        temp >>= 1;
-    }
-
-    /* È·±£»º³åÇø×ã¹» */
-    if (pos + bits >= size) {
-        return -1;
-    }
-
-    /* ´Ó×î¸ßÎ»µ½×îµÍÎ»Ìî³ä»º³åÇø */
-    for (int i = bits - 1; i >= 0; i--) {
+    /* å¯¹äº32ä½è¡¨ç¤ºï¼Œæ•°å€¼ä½å›ºå®š31ä½ */
+    for (int i = 30; i >= 0; i--) {
         buffer[pos++] = ((num >> i) & 1) ? '1' : '0';
     }
 
@@ -56,8 +33,8 @@ int decimal_to_binary_original(int32_t num, char *buffer, int size)
 }
 
 /*
- * ÒµÎñÂß¼­£º¸ù¾İÔ­Âë¼ÆËã·´Âë
- * ·´Âë£ºÕıÊıµÄ·´ÂëµÈÓÚÆäÔ­Âë£»¸ºÊıµÄ·´ÂëÊÇÔÚÆäÔ­ÂëµÄ»ù´¡ÉÏ£¬·ûºÅÎ»²»±ä£¬ÆäÓà¸÷Î»°´Î»È¡·´
+ * Òµï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ã·´ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ë£ºï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ë£»ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Î»È¡ï¿½ï¿½
  */
 int binary_ones_complement(const char *original, char *ones)
 {
@@ -68,7 +45,7 @@ int binary_ones_complement(const char *original, char *ones)
     int len = strlen(original);
     strcpy(ones, original);
 
-    /* Èç¹û·ûºÅÎ»Îª1£¨¸ºÊı£©£¬ÔòÆäËûÎ»È¡·´ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»Îª1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»È¡ï¿½ï¿½ */
     if (original[0] == '1') {
         for (int i = 1; i < len; i++) {
             ones[i] = (original[i] == '0') ? '1' : '0';
@@ -79,8 +56,8 @@ int binary_ones_complement(const char *original, char *ones)
 }
 
 /*
- * ÒµÎñÂß¼­£º¸ù¾İ·´Âë¼ÆËã²¹Âë
- * ²¹Âë£ºÕıÊıµÄ²¹ÂëµÈÓÚÆäÔ­Âë£»¸ºÊıµÄ²¹ÂëÊÇÔÚÆä·´ÂëµÄ»ù´¡ÉÏ¼Ó1
+ * Òµï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ·ï¿½ï¿½ï¿½ï¿½ï¿½ã²¹ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ë£ºï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ë£»ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä·´ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½1
  */
 int binary_twos_complement(const char *ones, char *twos)
 {
@@ -91,9 +68,9 @@ int binary_twos_complement(const char *ones, char *twos)
     int len = strlen(ones);
     strcpy(twos, ones);
 
-    /* Èç¹û·ûºÅÎ»Îª1£¨¸ºÊı£©£¬Ôò·´Âë+1µÃµ½²¹Âë */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»Îª1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½+1ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ */
     if (ones[0] == '1') {
-        /* ´Ó×îµÍÎ»¿ªÊ¼Ö´ĞĞ+1²Ù×÷ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Ê¼Ö´ï¿½ï¿½+1ï¿½ï¿½ï¿½ï¿½ */
         int carry = 1;
         for (int i = len - 1; i >= 1 && carry; i--) {
             if (twos[i] == '0') {
@@ -109,7 +86,7 @@ int binary_twos_complement(const char *ones, char *twos)
 }
 
 /*
- * ÒµÎñÂß¼­£ºÊ®½øÖÆ×ªÊ®Áù½øÖÆ
+ * Òµï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ê®ï¿½ï¿½ï¿½ï¿½×ªÊ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 int decimal_to_hexadecimal(int32_t num, char *buffer, int size)
 {
@@ -120,7 +97,7 @@ int decimal_to_hexadecimal(int32_t num, char *buffer, int size)
     int pos = 0;
     int is_negative = num < 0;
 
-    /* ´¦Àí¸ºÊı£ºÓÃ²¹ÂëĞÎÊ½±íÊ¾ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Ê¾ */
     if (is_negative) {
         buffer[pos++] = '-';
         num = -num;
@@ -132,7 +109,7 @@ int decimal_to_hexadecimal(int32_t num, char *buffer, int size)
         return pos;
     }
 
-    /* ÁÙÊ±´æ´¢Ê®Áù½øÖÆÊı×Ö */
+    /* ï¿½ï¿½Ê±ï¿½æ´¢Ê®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     char temp[20];
     int temp_len = 0;
 
@@ -142,7 +119,7 @@ int decimal_to_hexadecimal(int32_t num, char *buffer, int size)
         num /= 16;
     }
 
-    /* ·´ĞòÌî³ä»º³åÇø */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»ºï¿½ï¿½ï¿½ï¿½ */
     if (pos + temp_len >= size) {
         return -1;
     }
@@ -156,7 +133,7 @@ int decimal_to_hexadecimal(int32_t num, char *buffer, int size)
 }
 
 /*
- * ÒµÎñÂß¼­£ºÊ®½øÖÆ×ª°Ë½øÖÆ
+ * Òµï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ê®ï¿½ï¿½ï¿½ï¿½×ªï¿½Ë½ï¿½ï¿½ï¿½
  */
 int decimal_to_octal(int32_t num, char *buffer, int size)
 {
@@ -167,7 +144,7 @@ int decimal_to_octal(int32_t num, char *buffer, int size)
     int pos = 0;
     int is_negative = num < 0;
 
-    /* ´¦Àí¸ºÊı */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     if (is_negative) {
         buffer[pos++] = '-';
         num = -num;
@@ -179,7 +156,7 @@ int decimal_to_octal(int32_t num, char *buffer, int size)
         return pos;
     }
 
-    /* ÁÙÊ±´æ´¢°Ë½øÖÆÊı×Ö */
+    /* ï¿½ï¿½Ê±ï¿½æ´¢ï¿½Ë½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     char temp[30];
     int temp_len = 0;
 
@@ -188,7 +165,7 @@ int decimal_to_octal(int32_t num, char *buffer, int size)
         num /= 8;
     }
 
-    /* ·´ĞòÌî³ä»º³åÇø */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»ºï¿½ï¿½ï¿½ï¿½ */
     if (pos + temp_len >= size) {
         return -1;
     }
@@ -202,7 +179,7 @@ int decimal_to_octal(int32_t num, char *buffer, int size)
 }
 
 /*
- * Ö÷×ª»»º¯Êı£ºÕûºÏËùÓĞ×ª»»Âß¼­
+ * ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ß¼ï¿½
  */
 int convert_decimal(int32_t decimal, ConversionResult *result)
 {
@@ -210,27 +187,27 @@ int convert_decimal(int32_t decimal, ConversionResult *result)
         return -1;
     }
 
-    /* ×ª»»Îª¶ş½øÖÆÔ­Âë */
+    /* ×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ */
     if (decimal_to_binary_original(decimal, result->binary_original, 33) < 0) {
         return -1;
     }
 
-    /* ¸ù¾İÔ­Âë¼ÆËã·´Âë */
+    /* ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ã·´ï¿½ï¿½ */
     if (binary_ones_complement(result->binary_original, result->binary_ones) < 0) {
         return -1;
     }
 
-    /* ¸ù¾İ·´Âë¼ÆËã²¹Âë */
+    /* ï¿½ï¿½ï¿½İ·ï¿½ï¿½ï¿½ï¿½ï¿½ã²¹ï¿½ï¿½ */
     if (binary_twos_complement(result->binary_ones, result->binary_twos) < 0) {
         return -1;
     }
 
-    /* ×ª»»ÎªÊ®Áù½øÖÆ */
+    /* ×ªï¿½ï¿½ÎªÊ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     if (decimal_to_hexadecimal(decimal, result->hexadecimal, 11) < 0) {
         return -1;
     }
 
-    /* ×ª»»Îª°Ë½øÖÆ */
+    /* ×ªï¿½ï¿½Îªï¿½Ë½ï¿½ï¿½ï¿½ */
     if (decimal_to_octal(decimal, result->octal, 12) < 0) {
         return -1;
     }
@@ -239,20 +216,20 @@ int convert_decimal(int32_t decimal, ConversionResult *result)
 }
 
 /*
- * Êä³öº¯Êı£º¸ñÊ½»¯ÏÔÊ¾ËùÓĞ×ª»»½á¹û
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½
  */
 void print_conversion_result(int32_t decimal, const ConversionResult *result)
 {
-    printf("\n========== ½øÖÆ×ª»»½á¹û ==========\n");
-    printf("ÊäÈëÊ®½øÖÆÊı: %d\n\n", decimal);
+    printf("\n========== ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ ==========\n");
+    printf("ï¿½ï¿½ï¿½ï¿½Ê®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: %d\n\n", decimal);
 
-    printf("¡¾¶ş½øÖÆ±íÊ¾¡¿\n");
-    printf("  Ô­Âë:  %s\n", result->binary_original);
-    printf("  ·´Âë:  %s\n", result->binary_ones);
-    printf("  ²¹Âë:  %s\n\n", result->binary_twos);
+    printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ±ï¿½Ê¾ï¿½ï¿½\n");
+    printf("  Ô­ï¿½ï¿½:  %s\n", result->binary_original);
+    printf("  ï¿½ï¿½ï¿½ï¿½:  %s\n", result->binary_ones);
+    printf("  ï¿½ï¿½ï¿½ï¿½:  %s\n\n", result->binary_twos);
 
-    printf("¡¾ÆäËû½øÖÆ±íÊ¾¡¿\n");
-    printf("  Ê®Áù½øÖÆ: %s\n", result->hexadecimal);
-    printf("  °Ë½øÖÆ:   %s\n", result->octal);
+    printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ±ï¿½Ê¾ï¿½ï¿½\n");
+    printf("  Ê®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: %s\n", result->hexadecimal);
+    printf("  ï¿½Ë½ï¿½ï¿½ï¿½:   %s\n", result->octal);
     printf("==================================\n\n");
 }
